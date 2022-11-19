@@ -1,0 +1,26 @@
+spring:
+  profiles:
+    active: dev
+  datasource:
+    url: "jdbc:mysql://localhost/hairsalonlu?serverTimezone=UTC"
+    username: "root"
+    password: "root"
+  jpa:
+    hibernate.ddl-auto: "update"
+
+javafx:
+  title: Sprint Boot Javafx
+  stage:
+    resizable: true
+  main:
+    tree: true
+    toolbar: true
+
+flyway:
+  enabled: true
+    
+logging:
+  level:
+    com.skynet: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n"
