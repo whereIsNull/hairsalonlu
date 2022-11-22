@@ -24,3 +24,6 @@ logging:
     com.skynet: DEBUG
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n"
+
+hairSalonLu:
+  iva: 0.1

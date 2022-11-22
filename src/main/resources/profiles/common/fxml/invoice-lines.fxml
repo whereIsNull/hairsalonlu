@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+
+
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="451.0" prefWidth="631.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.skynet.javafx.controller.InvoiceLinesController">
+   <children>
+       <HBox >
+           <children>
+               <Button fx:id="btnNewLine" mnemonicParsing="false" onAction="#addInvoiceLine">
+                   <graphic>
+                       <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+<!--                           <image>-->
+<!--                               <Image url="/images/invoice-line_16x16.png" />-->
+<!--                           </image>-->
+                       </ImageView>
+                   </graphic>
+               </Button>
+               <Button fx:id="btnRemoveLine" mnemonicParsing="false" onAction="#addInvoiceLine">
+                   <graphic>
+                       <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+<!--                           <image>-->
+<!--                               <Image url="/images/invoice-remove-line_16x16.png" />-->
+<!--                           </image>-->
+                       </ImageView>
+                   </graphic>
+               </Button>
+<!--               <Button fx:id="btnEditLine" layoutX="22.0" layoutY="14.0" mnemonicParsing="false" text="Editar producto">-->
+<!--                   <opaqueInsets>-->
+<!--                       <Insets bottom="12.0" left="8.0" right="8.0" top="12.0" />-->
+<!--                   </opaqueInsets>-->
+<!--               </Button>-->
+           </children>
+       </HBox>
+      <TableView fx:id="invoiceLinesGrid" prefHeight="389.0" prefWidth="631.0">
+<!--        <columns>-->
+<!--          <TableColumn prefWidth="75.0" text="Producto" />-->
+<!--          <TableColumn prefWidth="75.0" text="Cantidad" />-->
+<!--            <TableColumn prefWidth="75.0" text="Precio" />-->
+<!--            <TableColumn prefWidth="75.0" />-->
+<!--        </columns>-->
+      </TableView>
+      <Pane nodeOrientation="RIGHT_TO_LEFT" prefHeight="60.0" prefWidth="631.0">
+         <children>
+            <Button layoutX="22.0" layoutY="14.0" mnemonicParsing="false" text="Aceptar">
+               <opaqueInsets>
+                  <Insets bottom="4.0" left="8.0" right="8.0" top="4.0" />
+               </opaqueInsets>
+            </Button>
+            <Button layoutX="90.0" layoutY="14.0" mnemonicParsing="false" text="Cancelar" />
+         </children>
+      </Pane>
+   </children>
+</VBox>

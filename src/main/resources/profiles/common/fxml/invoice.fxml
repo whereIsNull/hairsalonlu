@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.VBox?>
 
 <?import javafx.scene.control.Button?>
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="450.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.skynet.javafx.controller.CategoryController">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="450.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.skynet.javafx.controller.InvoiceController">
     <children>
         <TabPane prefHeight="400.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE">
             <tabs>
@@ -17,11 +17,11 @@
                     <content>
                         <AnchorPane prefHeight="334.0" prefWidth="600.0">
                             <children>
-                                <Label layoutX="25.0" layoutY="26.0" text="Category:" />
-                                <TextField fx:id="textCategoryName" layoutX="92.0" layoutY="21.0" prefHeight="26.0" prefWidth="478.0" />
-                                <Label layoutX="25.0" layoutY="77.0" text="Prize:" />
+                                <Label layoutX="25.0" layoutY="26.0" text="Producto:" />
+                                <TextField fx:id="textProductName" layoutX="92.0" layoutY="21.0" prefHeight="26.0" prefWidth="478.0" />
+                                <Label layoutX="25.0" layoutY="77.0" text="Precio:" />
                                 <TextField fx:id="textPrize" layoutX="92.0" layoutY="72.0" prefHeight="26.0" prefWidth="478.0"/>
-                                <Button fx:id="addImage" layoutX="25.0" layoutY="128.0" prefHeight="80.0" prefWidth="80.0" text="Add image" />
+                                <Button fx:id="addImage" layoutX="25.0" layoutY="128.0" prefHeight="80.0" prefWidth="80.0" text="Imagen" />
                             </children>
                         </AnchorPane>
                     </content>

@@ -18,7 +18,7 @@
         </rowConstraints>
          <children>
             <fx:include fx:id="framebar" source="framebar.fxml" />
-            <TableView fx:id="frameGrid" prefHeight="165.0" prefWidth="521.0" GridPane.rowIndex="1">
+            <TableView fx:id="frameGrid" prefHeight="165.0" prefWidth="521.0" GridPane.rowIndex="1" styleClass="scroll-bar">
             </TableView>
          </children>
       </GridPane>

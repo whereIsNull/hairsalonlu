@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="450.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.skynet.javafx.controller.ProductController">
+    <children>
+        <TabPane prefHeight="400.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE">
+            <tabs>
+                <Tab text="Basic">
+                    <content>
+                        <AnchorPane prefHeight="334.0" prefWidth="600.0">
+                            <children>
+                                <Label layoutX="25.0" layoutY="25.0" text="Categoría:" />
+                                <ComboBox fx:id="comboCategory" layoutX="105.0" layoutY="24.0" prefHeight="26.0" prefWidth="178.0" />
+                                <Label layoutX="25.0" layoutY="75.0" text="Producto:" />
+                                <TextField fx:id="textProductName" layoutX="105.0" layoutY="74.0" prefHeight="26.0" prefWidth="478.0" />
+                                <Label layoutX="25.0" layoutY="125.0" text="Precio:" />
+                                <TextField fx:id="textPrice" layoutX="105.0" layoutY="124.0" prefHeight="26.0" prefWidth="478.0"/>
+                                <Label layoutX="25.0" layoutY="175.0" text="Precio sin IVA:" />
+                                <TextField fx:id="textPriceWithoutIVA" layoutX="105.0" layoutY="174.0" prefHeight="26.0" prefWidth="478.0" disable="true"/>
+                            </children>
+                        </AnchorPane>
+                    </content>
+                </Tab>
+            </tabs>
+        </TabPane>
+        <Pane nodeOrientation="RIGHT_TO_LEFT" prefHeight="60.0" prefWidth="600.0">
+            <children>
+                <fx:include fx:id="buttonbar" source="buttonbar.fxml" />
+            </children>
+        </Pane>
+    </children>
+</VBox>

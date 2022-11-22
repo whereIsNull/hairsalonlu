@@ -1,21 +1,20 @@
 package com.skynet.javafx.views.def;
 
-import com.skynet.javafx.views.CategoryView;
-import com.skynet.javafx.views.CustomerView;
+import com.skynet.javafx.views.ProductView;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 import java.util.List;
 
 @Component
-public class CategoryGridDef implements FrameGridDef {
+public class ProductGridDef implements FrameGridDef {
 
     public static String COLUMN_NAMES[] =
-            { "serviceName","prize"};
+            { "Categoría", "Producto","Precio"};
     public static String COLUMN_DATA_NAMES[] =
-            { "serviceName","prize"};
-    public static Integer COLUMN_SIZES[] = { 200, 50 };
-    public static String TITLE_POPUPS = "Categories";
+            { "category", "productName","price"};
+    public static Integer COLUMN_SIZES[] = { 200, 200, 50 };
+    public static String TITLE_POPUPS = "Productos";
 
     @Override
     public List<String> getColumnNames() {
@@ -34,7 +33,7 @@ public class CategoryGridDef implements FrameGridDef {
 
     @Override
     public Class<?> getCreateView() {
-        return CategoryView.class;
+        return ProductView.class;
     }
 
     @Override
