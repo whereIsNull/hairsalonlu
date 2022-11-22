@@ -15,7 +15,7 @@ public class Invoice extends SimpleEntity {
 
     public Float iVA;
     public BigDecimal total;
-    public BigDecimal totalWithIVA;
+    public BigDecimal totalWithoutIVA;
     @OneToMany(mappedBy = "invoice", fetch = FetchType.EAGER, cascade= CascadeType.ALL)
     private List<InvoiceLine> lines = new ArrayList<>();
     private Date date;
@@ -52,21 +52,23 @@ public class Invoice extends SimpleEntity {
         this.iVA = iVA;
     }
 
-    public BigDecimal getTotalWithIVA() {
-        return totalWithIVA;
+    public BigDecimal getTotalWithoutIVA() {
+        return totalWithoutIVA;
     }
 
-    public void setTotalWithIVA(BigDecimal totalWithIVA) {
-        this.totalWithIVA = totalWithIVA;
+    public void setTotalWithoutIVA(BigDecimal totalWithoutIVA) {
+        this.totalWithoutIVA = totalWithoutIVA;
     }
 
     public String getFirstLine() {
         return String.join("; ",
-                lines.stream().map(l -> l.getProductName()).collect(Collectors.toList())
+                lines.stream()
+                        .map(l -> l.getProductName().concat("(" + l.getAmount()+ ")"))
+                        .collect(Collectors.toList())
         );
     }
 
-    public BigDecimal getPrize() {
+    public BigDecimal getPrice() {
         return this.lines.stream().reduce(new BigDecimal(0),
             (accumulator, line) -> {
                 accumulator.add(line.getProductPrize());

@@ -10,6 +10,8 @@
 <?import javafx.scene.layout.VBox?>
 
 <?import javafx.scene.image.Image?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.TextField?>
 <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="451.0" prefWidth="631.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.skynet.javafx.controller.InvoiceLinesController">
    <children>
        <HBox>
@@ -51,6 +53,11 @@
          <children>
             <HBox alignment="CENTER_RIGHT" prefHeight="38.0" prefWidth="631.0">
                <children>
+                  <ComboBox fx:id="comboPaymentWay" prefWidth="71.0" />
+                   <Label prefHeight="17.0" prefWidth="41.0" text="Recibido: " />
+                  <TextField fx:id="receivedAmount" />
+                   <Label prefHeight="17.0" prefWidth="41.0" text="Vuelta:" />
+                   <TextField fx:id="devolutionText" prefHeight="17.0" prefWidth="41.0" />
                   <Label prefHeight="17.0" prefWidth="41.0" text="Total:" />
                   <Label fx:id="totalLabel" prefHeight="17.0" prefWidth="63.0" />
                   <Label prefHeight="25.0" prefWidth="46.0" text="I.V.A.:" />

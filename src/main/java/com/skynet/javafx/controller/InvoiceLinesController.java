@@ -6,7 +6,6 @@ import com.skynet.javafx.service.CategoryService;
 import com.skynet.javafx.service.InvoiceService;
 import com.skynet.javafx.service.ProductService;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.ComboBoxTableCell;
@@ -65,6 +64,10 @@ public class InvoiceLinesController implements CrudController {
 
     @FXML
     private Button btnCancelInvoice;
+    @FXML
+    private ComboBox comboPaymentWay;
+    @FXML
+    private TextField receivedAmount;
 
     @FXML
     private void initialize() {
@@ -131,7 +134,6 @@ public class InvoiceLinesController implements CrudController {
         productColumn.setMinWidth(300.0);
         invoiceLinesGrid.getColumns().add(productColumn);
 
-
         // Precio unidad
         TableColumn<InvoiceLine, String> productPrizeColumn = new TableColumn<>("Precio unidad");
         productPrizeColumn.setCellValueFactory(
@@ -183,6 +185,9 @@ public class InvoiceLinesController implements CrudController {
 
         invoiceLinesGrid.setEditable(true);
 
+        receivedAmount.setDisable(true);
+        configurePayment();
+
         configureButtons();
 
     }
@@ -216,6 +221,9 @@ public class InvoiceLinesController implements CrudController {
     @FXML
     public void render(SimpleEntity entity) {
         Invoice invoice = (Invoice)entity;
+        this.invoiceLinesGrid.setItems(FXCollections.observableList(invoice.getLines()));
+        this.totalLabel.setText(invoice.getTotalWithoutIVA().toString());
+        this.totalIvaLabel.setText(invoice.getTotal().toString());
     }
 
     @Override
@@ -229,6 +237,7 @@ public class InvoiceLinesController implements CrudController {
         });
         btnRemoveLine.setOnAction(event -> {
             this.invoiceLinesGrid.getItems().remove(this.invoiceLinesGrid.getSelectionModel().getSelectedItem());
+            calculateTotals();
         });
         btnCreateInvoice.setOnAction(event -> {
             Invoice invoice = new Invoice();
@@ -236,7 +245,7 @@ public class InvoiceLinesController implements CrudController {
             invoice.getLines().forEach(l -> l.setInvoice(invoice));
             invoice.setiVA(iva);
             invoice.setTotal(new BigDecimal(totalLabel.getText()));
-            invoice.setTotalWithIVA(new BigDecimal(totalIvaLabel.getText()));
+            invoice.setTotalWithoutIVA(new BigDecimal(totalIvaLabel.getText()));
             invoice.setDate(new Date());
             invoiceService.save(invoice);
             btnCreateInvoice.getScene().getWindow().hide();
@@ -244,5 +253,13 @@ public class InvoiceLinesController implements CrudController {
         btnCancelInvoice.setOnAction(event -> {
             btnCancelInvoice.getScene().getWindow().hide();
         });
+    }
+
+    private void configurePayment() {
+        comboPaymentWay.getItems().setAll(FXCollections.observableList(List.of("EFECTIVO", "TARJETA")));
+        comboPaymentWay.getSelectionModel().selectedItemProperty().addListener((options, oldValue, newValue) -> {
+            receivedAmount.setDisable(!newValue.equals("EFECTIVO"));
+        });
+
     }
 }

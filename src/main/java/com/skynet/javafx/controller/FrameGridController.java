@@ -63,7 +63,7 @@ public class FrameGridController implements PrototypeController {
 		AbstractFxmlView fxmlView = showDialog();
 		CrudController controller = (CrudController) fxmlView.getFxmlLoader().getController();
 		controller.add();
-		frameGrid.scrollTo(frameGrid.getItems().size() -1 );
+		frameGrid.scrollTo(frameGrid.getItems().size()  );
 		//setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 	}
 
@@ -133,8 +133,9 @@ public class FrameGridController implements PrototypeController {
 		AbstractFxmlView fxmlView = (AbstractFxmlView) context.getBean(gridDef.getCreateView());
 		Stage stage = new Stage();
 		scene = new Scene(fxmlView.getView());
-		stage.setMinWidth(800);
-		stage.setMinHeight(600);
+		stage.setMaximized(true);
+//		stage.setMinWidth(800);
+//		stage.setMinHeight(600);
         stage.setScene(scene);
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.initStyle(StageStyle.UTILITY);
