@@ -1,7 +1,9 @@
 package com.skynet.javafx.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import com.skynet.javafx.service.ReportService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +36,8 @@ public class FrameGridController implements PrototypeController {
 	
 	@Autowired
 	private ApplicationContext context;
+	@Autowired
+	private ReportService reportService;
 	@FXML
 	private Button addButton;
 	@FXML
@@ -47,7 +51,7 @@ public class FrameGridController implements PrototypeController {
 	private FrameService frameService;
 	private FrameGridDef gridDef;
 	private Scene scene;
-	
+
 	@FXML
 	private void initialize() {
 		editButton.setDisable(true);
@@ -82,6 +86,7 @@ public class FrameGridController implements PrototypeController {
 	
 	private void printButtonHandleAction() {
 		logger.debug("clicked printButton");
+		reportService.generate(10, 2022);
 	}
 	
 	public void initializeGrid(FrameService frameService, FrameGridDef gridDef) {
@@ -108,6 +113,7 @@ public class FrameGridController implements PrototypeController {
 			if (newSelection != null) {
 				editButton.setDisable(false);
 				deleteButton.setDisable(false);
+				printButton.setDisable(false);
 			} else {
 				editButton.setDisable(true);
 				deleteButton.setDisable(true);

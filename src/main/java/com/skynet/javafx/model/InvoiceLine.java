@@ -15,10 +15,7 @@ public class InvoiceLine extends SimpleEntity {
     private String productName;
     private BigDecimal productPrize;
     private Integer amount;
-    private BigDecimal calculatedPrize;
-
-    @Transient
-    private Product product;
+    private BigDecimal calculatedPrice;
 
     public Invoice getInvoice() {
         return invoice;
@@ -56,23 +53,16 @@ public class InvoiceLine extends SimpleEntity {
         return productPrize;
     }
 
-    public void setProductPrize(BigDecimal productPrize) {
+    public void setProductPrice(BigDecimal productPrize) {
         this.productPrize = productPrize;
     }
 
-    public BigDecimal getCalculatedPrize() {
-        return calculatedPrize;
+    public BigDecimal getCalculatedPrice() {
+        return calculatedPrice;
     }
 
-    public void setCalculatedPrize(BigDecimal calculatedPrize) {
-        this.calculatedPrize = calculatedPrize;
+    public void setCalculatedPrice(BigDecimal calculatedPrice) {
+        this.calculatedPrice = calculatedPrice;
     }
 
-    public Product getProduct() {
-        return product;
-    }
-
-    public void setProduct(Product product) {
-        this.product = product;
-    }
 }

@@ -21,3 +21,16 @@ create table customer (
   email varchar(255),
   PRIMARY KEY (id)
 );
+
+create table category (
+  id bigint auto_increment not null primary key,
+  category varchar(255) not null
+);
+
+ create table product (
+   id bigint auto_increment not null,
+   category varchar(255) not null,
+   product_name varchar(255) not null,
+   price decimal(9, 2) not null,
+   PRIMARY KEY(id)
+);

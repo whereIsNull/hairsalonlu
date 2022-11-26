@@ -4,7 +4,7 @@ import com.skynet.javafx.jfxsupport.AbstractFxmlView;
 import com.skynet.javafx.jfxsupport.FXMLView;
 import org.springframework.context.annotation.Scope;
 
-@FXMLView("/fxml/invoice-lines_III.fxml")
+@FXMLView("/fxml/printer.fxml")
 @Scope("prototype")
-public class InvoiceView extends AbstractFxmlView {
+public class PrintView extends AbstractFxmlView {
 }

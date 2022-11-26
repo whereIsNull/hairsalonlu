@@ -1,0 +1,2 @@
+insert into menuitem(id, parent, menu_key, menu_value, menu_service, grid_def, expanded, image)
+values(5, 0, 'master.reports', 'Informes', 'reportService', 'reportGridDef', 0, 'pdf_reports_16x16.png');

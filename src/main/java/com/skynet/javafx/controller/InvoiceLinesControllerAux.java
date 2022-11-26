@@ -5,11 +5,8 @@ import com.skynet.javafx.model.*;
 import com.skynet.javafx.service.CategoryService;
 import com.skynet.javafx.service.InvoiceService;
 import com.skynet.javafx.service.ProductService;
-import com.skynet.javafx.utils.TicketPrinter;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -20,7 +17,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
@@ -29,9 +25,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @FXMLController
-public class InvoiceLinesController implements CrudController {
+public class InvoiceLinesControllerAux implements CrudController {
 
-    private static final Logger logger = LoggerFactory.getLogger(InvoiceLinesController.class);
+    private static final Logger logger = LoggerFactory.getLogger(InvoiceLinesControllerAux.class);
 
     @Value("${hairSalonLu.iva:0.16}")
     private Float iva;
@@ -41,16 +37,14 @@ public class InvoiceLinesController implements CrudController {
     private ProductService productService;
     @Autowired
     private CategoryService categoryService;
-    @Autowired
-    private TicketPrinter ticketPrinter;
     @FXML
     private TableView<InvoiceLine> invoiceLinesGrid;
     @FXML
     private Button btnNewLine;
     @FXML
     private Button btnRemoveLine;
-//    @FXML
-//    private Label totalLabel;
+    @FXML
+    private Label totalLabel;
     @FXML
     private TextField ivaLabel;
     @FXML
@@ -113,7 +107,7 @@ public class InvoiceLinesController implements CrudController {
             if(data.getRowValue().getAmount() == null || data.getRowValue().getAmount() == 0) {
                 data.getRowValue().setAmount(1);
             }
-            calculateLinePrice(data.getRowValue());
+            calculateLinePrize(data.getRowValue());
             invoiceLinesGrid.getSelectionModel().getSelectedItem().setProductPrice(selectedProduct.getPrice());
             invoiceLinesGrid.getSelectionModel().getSelectedItem().setProductName(selectedProduct.getProductName());
             if(data.getRowValue().getProductPrize() != null && data.getRowValue().getAmount() != null) {
@@ -157,7 +151,7 @@ public class InvoiceLinesController implements CrudController {
         amountColumn.setMinWidth(50.0);
         amountColumn.setOnEditCommit(data -> {
             data.getRowValue().setAmount(Integer.valueOf(data.getNewValue()));
-            calculateLinePrice(data.getRowValue());
+            calculateLinePrize(data.getRowValue());
             invoiceLinesGrid.getSelectionModel().getSelectedItem().setAmount(Integer.valueOf(data.getNewValue()));
             if(data.getRowValue().getProductPrize() != null && data.getRowValue().getAmount() != null) {
                 invoiceLinesGrid.getSelectionModel().getSelectedItem().setCalculatedPrice(
@@ -173,12 +167,12 @@ public class InvoiceLinesController implements CrudController {
         });
         invoiceLinesGrid.getColumns().add(amountColumn);
 
-        TableColumn<InvoiceLine, String> calculatedPriceColumn = new TableColumn<>("Precio total");
-        calculatedPriceColumn.setCellValueFactory(
-                new PropertyValueFactory<InvoiceLine, String>("calculatedPrice")
+        TableColumn<InvoiceLine, String> calculatedPrizeColumn = new TableColumn<>("Precio total");
+        calculatedPrizeColumn.setCellValueFactory(
+                new PropertyValueFactory<InvoiceLine, String>("calculatedPrize")
         );
-        calculatedPriceColumn.setMinWidth(50.0);
-        invoiceLinesGrid.getColumns().add(calculatedPriceColumn);
+        calculatedPrizeColumn.setMinWidth(50.0);
+        invoiceLinesGrid.getColumns().add(calculatedPrizeColumn);
 
         invoiceLinesGrid.setEditable(true);
 
@@ -201,7 +195,7 @@ public class InvoiceLinesController implements CrudController {
         );
     }
 
-    void calculateLinePrice(InvoiceLine line) {
+    void calculateLinePrize(InvoiceLine line) {
         if(line.getAmount() != null) {
             line.setCalculatedPrice(line.getProductPrize().multiply(new BigDecimal(line.getAmount())));
         }
@@ -221,7 +215,7 @@ public class InvoiceLinesController implements CrudController {
     public void render(SimpleEntity entity) {
         Invoice invoice = (Invoice)entity;
         this.invoiceLinesGrid.setItems(FXCollections.observableList(invoice.getLines()));
-//        this.totalLabel.setText(invoice.getTotalWithoutIVA().toString());
+        this.totalLabel.setText(invoice.getTotalWithoutIVA().toString());
         this.total.setText(invoice.getTotal().toString());
     }
 
@@ -243,11 +237,10 @@ public class InvoiceLinesController implements CrudController {
             invoice.setLines(new ArrayList<>(this.invoiceLinesGrid.getItems()));
             invoice.getLines().forEach(l -> l.setInvoice(invoice));
             invoice.setiVA(iva);
-//            invoice.setTotal(new BigDecimal(totalLabel.getText()));
+            invoice.setTotal(new BigDecimal(totalLabel.getText()));
             invoice.setTotalWithoutIVA(new BigDecimal(total.getText()));
             invoice.setDate(new Date());
             invoiceService.save(invoice);
-            ticketPrinter.print();
             btnCreateInvoice.getScene().getWindow().hide();
         });
         btnCancelInvoice.setOnAction(event -> {

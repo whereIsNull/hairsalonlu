@@ -10,9 +10,9 @@ import java.util.List;
 @Component
 public class InvoiceGridDef implements FrameGridDef {
     public static String COLUMN_NAMES[] =
-            { "Id","Descripción", "Precio"};
+            { "Id","Descripción", "Precio", "Precio sin IVA"};
     public static String COLUMN_DATA_NAMES[] =
-            { "id", "firstLine","totalWithIVA"};
+            { "id", "firstLine","total","totalWithoutIVA"};
     public static Integer COLUMN_SIZES[] = { 5, 100, 200, 50 };
     public static String TITLE_POPUPS = "Líneas";
 

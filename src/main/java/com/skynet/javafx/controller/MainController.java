@@ -1,6 +1,9 @@
 package com.skynet.javafx.controller;
 
 import java.util.List;
+
+import javafx.application.Platform;
+import javafx.scene.control.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import com.skynet.javafx.config.PropertiesConfig;
@@ -11,15 +14,6 @@ import com.skynet.javafx.views.FrameGridView;
 import com.skynet.javafx.views.def.FrameGridDef;
 import javafx.fxml.FXML;
 import javafx.geometry.Rectangle2D;
-import javafx.scene.control.Button;
-import javafx.scene.control.MultipleSelectionModel;
-import javafx.scene.control.SplitPane;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
-import javafx.scene.control.ToolBar;
-import javafx.scene.control.Tooltip;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -48,6 +42,9 @@ public class MainController {
 
 	@FXML
 	private TabPane tabPane;
+
+	@FXML
+	private MenuItem menuItemClose;
 	
 	TreeView<com.skynet.javafx.model.MenuItem> treeView;
 
@@ -82,7 +79,7 @@ public class MainController {
 				}
 			});
 		}
-
+		setOnCloseMenuItemAction();
 	}
 
 	public void onWindowShownEvent() {
@@ -177,5 +174,11 @@ public class MainController {
 			}
 		}
 		return -1;
+	}
+
+	private void setOnCloseMenuItemAction() {
+		this.menuItemClose.setOnAction(event -> {
+			Platform.exit();
+		});
 	}
 }
