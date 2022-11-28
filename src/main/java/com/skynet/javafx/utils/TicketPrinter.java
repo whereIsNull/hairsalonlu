@@ -1,7 +1,9 @@
 package com.skynet.javafx.utils;
 
 
+import com.skynet.javafx.controller.PrinterController;
 import com.skynet.javafx.jfxsupport.AbstractFxmlView;
+import com.skynet.javafx.model.Invoice;
 import com.skynet.javafx.views.PrintView;
 import javafx.collections.ObservableSet;
 import javafx.fxml.FXML;
@@ -27,15 +29,17 @@ public class TicketPrinter {
     @Autowired
     private ApplicationContext context;
 
-    public void print() {
+    public void print(Invoice invoice) {
 
         Stage stage = new Stage();
         AbstractFxmlView fxmlView = (AbstractFxmlView) context.getBean(PrintView.class);
         Scene scene = new Scene(fxmlView.getView());
+        ((PrinterController)fxmlView.getFxmlLoader().getController()).render(invoice);
+
 
         stage.setScene(scene);
         stage.initModality(Modality.APPLICATION_MODAL);
-        stage.setTitle("Showing all Printers");
+        stage.setTitle("Impresoras");
         stage.show();
     }
 

@@ -3,7 +3,6 @@ package com.skynet.javafx.model;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
-import javax.persistence.Transient;
 import java.math.BigDecimal;
 
 @Entity
@@ -13,7 +12,7 @@ public class InvoiceLine extends SimpleEntity {
     private Invoice invoice;
     private String category;
     private String productName;
-    private BigDecimal productPrize;
+    private BigDecimal productPrice;
     private Integer amount;
     private BigDecimal calculatedPrice;
 
@@ -49,12 +48,12 @@ public class InvoiceLine extends SimpleEntity {
         this.amount = amount;
     }
 
-    public BigDecimal getProductPrize() {
-        return productPrize;
+    public BigDecimal getProductPrice() {
+        return productPrice;
     }
 
-    public void setProductPrice(BigDecimal productPrize) {
-        this.productPrize = productPrize;
+    public void setProductPrice(BigDecimal productPrice) {
+        this.productPrice = productPrice;
     }
 
     public BigDecimal getCalculatedPrice() {

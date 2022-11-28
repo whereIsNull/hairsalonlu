@@ -20,7 +20,7 @@
                                 <Label layoutX="25.0" layoutY="26.0" text="Producto:" />
                                 <TextField fx:id="textProductName" layoutX="92.0" layoutY="21.0" prefHeight="26.0" prefWidth="478.0" />
                                 <Label layoutX="25.0" layoutY="77.0" text="Precio:" />
-                                <TextField fx:id="textPrize" layoutX="92.0" layoutY="72.0" prefHeight="26.0" prefWidth="478.0"/>
+                                <TextField fx:id="textPrice" layoutX="92.0" layoutY="72.0" prefHeight="26.0" prefWidth="478.0"/>
                                 <Button fx:id="addImage" layoutX="25.0" layoutY="128.0" prefHeight="80.0" prefWidth="80.0" text="Imagen" />
                             </children>
                         </AnchorPane>

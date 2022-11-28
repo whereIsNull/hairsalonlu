@@ -7,21 +7,21 @@ import com.skynet.javafx.service.InvoiceService;
 import com.skynet.javafx.service.ProductService;
 import com.skynet.javafx.utils.TicketPrinter;
 import javafx.collections.FXCollections;
+import javafx.event.EventType;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.util.StringConverter;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
-import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
@@ -65,6 +65,8 @@ public class InvoiceLinesController implements CrudController {
     private ComboBox comboPaymentWay;
     @FXML
     private TextField receivedAmount;
+    @FXML
+    private TextField returnedValue;
 
     @FXML
     private void initialize() {
@@ -116,12 +118,12 @@ public class InvoiceLinesController implements CrudController {
             calculateLinePrice(data.getRowValue());
             invoiceLinesGrid.getSelectionModel().getSelectedItem().setProductPrice(selectedProduct.getPrice());
             invoiceLinesGrid.getSelectionModel().getSelectedItem().setProductName(selectedProduct.getProductName());
-            if(data.getRowValue().getProductPrize() != null && data.getRowValue().getAmount() != null) {
+            if(data.getRowValue().getProductPrice() != null && data.getRowValue().getAmount() != null) {
                 invoiceLinesGrid.getSelectionModel().getSelectedItem().setCalculatedPrice(
                         invoiceLinesGrid
                                 .getSelectionModel()
                                 .getSelectedItem()
-                                .getProductPrize()
+                                .getProductPrice()
                                 .multiply(new BigDecimal(invoiceLinesGrid.getSelectionModel().getSelectedItem().getAmount()))
                 );
             }
@@ -132,17 +134,18 @@ public class InvoiceLinesController implements CrudController {
         invoiceLinesGrid.getColumns().add(productColumn);
 
         // Precio unidad
-        TableColumn<InvoiceLine, String> productPrizeColumn = new TableColumn<>("Precio unidad");
-        productPrizeColumn.setCellValueFactory(
-                new PropertyValueFactory<InvoiceLine, String>("productPrize")
+        TableColumn<InvoiceLine, String> productPriceColumn = new TableColumn<>("Precio unidad");
+        productPriceColumn.setCellValueFactory(
+                new PropertyValueFactory<InvoiceLine, String>("productPrice")
         );
-        productPrizeColumn.setMinWidth(120.0);
-        invoiceLinesGrid.getColumns().add(productPrizeColumn);
+        productPriceColumn.setMinWidth(120.0);
+        invoiceLinesGrid.getColumns().add(productPriceColumn);
 
         TableColumn<InvoiceLine, Integer> amountColumn = new TableColumn<>("Cantidad");
         amountColumn.setCellValueFactory(
                 new PropertyValueFactory<InvoiceLine, Integer>("amount")
         );
+
         amountColumn.setCellFactory(TextFieldTableCell.forTableColumn(new StringConverter<Integer>() {
             @Override
             public String toString(Integer integer) {
@@ -159,12 +162,12 @@ public class InvoiceLinesController implements CrudController {
             data.getRowValue().setAmount(Integer.valueOf(data.getNewValue()));
             calculateLinePrice(data.getRowValue());
             invoiceLinesGrid.getSelectionModel().getSelectedItem().setAmount(Integer.valueOf(data.getNewValue()));
-            if(data.getRowValue().getProductPrize() != null && data.getRowValue().getAmount() != null) {
+            if(data.getRowValue().getProductPrice() != null && data.getRowValue().getAmount() != null) {
                 invoiceLinesGrid.getSelectionModel().getSelectedItem().setCalculatedPrice(
                         invoiceLinesGrid
                                 .getSelectionModel()
                                 .getSelectedItem()
-                                .getProductPrize()
+                                .getProductPrice()
                                 .multiply(new BigDecimal(invoiceLinesGrid.getSelectionModel().getSelectedItem().getAmount()))
                 );
             }
@@ -199,11 +202,12 @@ public class InvoiceLinesController implements CrudController {
         this.totalWithoutIVA.setText(
                 (totalPrice.multiply(new BigDecimal(1-iva)).setScale(2, RoundingMode.FLOOR)).toString()
         );
+        calculateReturnedValue();
     }
 
     void calculateLinePrice(InvoiceLine line) {
         if(line.getAmount() != null) {
-            line.setCalculatedPrice(line.getProductPrize().multiply(new BigDecimal(line.getAmount())));
+            line.setCalculatedPrice(line.getProductPrice().multiply(new BigDecimal(line.getAmount())));
         }
     }
 
@@ -236,18 +240,22 @@ public class InvoiceLinesController implements CrudController {
         });
         btnRemoveLine.setOnAction(event -> {
             this.invoiceLinesGrid.getItems().remove(this.invoiceLinesGrid.getSelectionModel().getSelectedItem());
-            calculateTotals();
+            if(this.invoiceLinesGrid.getItems().isEmpty()) {
+                clearAllComponents();
+            } else {
+                calculateTotals();
+            }
         });
         btnCreateInvoice.setOnAction(event -> {
             Invoice invoice = new Invoice();
             invoice.setLines(new ArrayList<>(this.invoiceLinesGrid.getItems()));
             invoice.getLines().forEach(l -> l.setInvoice(invoice));
             invoice.setiVA(iva);
-//            invoice.setTotal(new BigDecimal(totalLabel.getText()));
-            invoice.setTotalWithoutIVA(new BigDecimal(total.getText()));
+            invoice.setTotal(new BigDecimal(total.getText()));
+            invoice.setTotalWithoutIVA(new BigDecimal(totalWithoutIVA.getText()));
             invoice.setDate(new Date());
             invoiceService.save(invoice);
-            ticketPrinter.print();
+            ticketPrinter.print(invoice);
             btnCreateInvoice.getScene().getWindow().hide();
         });
         btnCancelInvoice.setOnAction(event -> {
@@ -255,11 +263,34 @@ public class InvoiceLinesController implements CrudController {
         });
     }
 
+    private void clearAllComponents() {
+        this.total.setText("");
+        this.receivedAmount.setText("");
+        this.totalWithoutIVA.setText("");
+        this.returnedValue.setText("");
+
+    }
+
     private void configurePayment() {
         comboPaymentWay.getItems().setAll(FXCollections.observableList(List.of("EFECTIVO", "TARJETA")));
         comboPaymentWay.getSelectionModel().selectedItemProperty().addListener((options, oldValue, newValue) -> {
             receivedAmount.setDisable(!newValue.equals("EFECTIVO"));
+            receivedAmount.setOnKeyTyped(e -> {
+                calculateReturnedValue();
+            });
         });
 
+    }
+
+    private void calculateReturnedValue() {
+        if(!StringUtils.isEmpty(receivedAmount.getText())) {
+            BigDecimal received = new BigDecimal(receivedAmount.getText());
+            BigDecimal totalAmount = new BigDecimal(total.getText());
+            if (received.compareTo(totalAmount) > 0) {
+                returnedValue.setText(
+                        received.subtract(totalAmount, new MathContext(2, RoundingMode.UP)).toString()
+                );
+            }
+        }
     }
 }

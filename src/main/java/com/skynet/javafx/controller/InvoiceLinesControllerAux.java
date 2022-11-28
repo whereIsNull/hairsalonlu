@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
@@ -59,6 +60,8 @@ public class InvoiceLinesControllerAux implements CrudController {
     private ComboBox comboPaymentWay;
     @FXML
     private TextField receivedAmount;
+    @FXML
+    private TextField returnedValue;
 
     @FXML
     private void initialize() {
@@ -107,15 +110,15 @@ public class InvoiceLinesControllerAux implements CrudController {
             if(data.getRowValue().getAmount() == null || data.getRowValue().getAmount() == 0) {
                 data.getRowValue().setAmount(1);
             }
-            calculateLinePrize(data.getRowValue());
+            calculateLinePrice(data.getRowValue());
             invoiceLinesGrid.getSelectionModel().getSelectedItem().setProductPrice(selectedProduct.getPrice());
             invoiceLinesGrid.getSelectionModel().getSelectedItem().setProductName(selectedProduct.getProductName());
-            if(data.getRowValue().getProductPrize() != null && data.getRowValue().getAmount() != null) {
+            if(data.getRowValue().getProductPrice() != null && data.getRowValue().getAmount() != null) {
                 invoiceLinesGrid.getSelectionModel().getSelectedItem().setCalculatedPrice(
                         invoiceLinesGrid
                                 .getSelectionModel()
                                 .getSelectedItem()
-                                .getProductPrize()
+                                .getProductPrice()
                                 .multiply(new BigDecimal(invoiceLinesGrid.getSelectionModel().getSelectedItem().getAmount()))
                 );
             }
@@ -126,12 +129,12 @@ public class InvoiceLinesControllerAux implements CrudController {
         invoiceLinesGrid.getColumns().add(productColumn);
 
         // Precio unidad
-        TableColumn<InvoiceLine, String> productPrizeColumn = new TableColumn<>("Precio unidad");
-        productPrizeColumn.setCellValueFactory(
-                new PropertyValueFactory<InvoiceLine, String>("productPrize")
+        TableColumn<InvoiceLine, String> productPriceColumn = new TableColumn<>("Precio unidad");
+        productPriceColumn.setCellValueFactory(
+                new PropertyValueFactory<InvoiceLine, String>("productPrice")
         );
-        productPrizeColumn.setMinWidth(120.0);
-        invoiceLinesGrid.getColumns().add(productPrizeColumn);
+        productPriceColumn.setMinWidth(120.0);
+        invoiceLinesGrid.getColumns().add(productPriceColumn);
 
         TableColumn<InvoiceLine, Integer> amountColumn = new TableColumn<>("Cantidad");
         amountColumn.setCellValueFactory(
@@ -151,14 +154,14 @@ public class InvoiceLinesControllerAux implements CrudController {
         amountColumn.setMinWidth(50.0);
         amountColumn.setOnEditCommit(data -> {
             data.getRowValue().setAmount(Integer.valueOf(data.getNewValue()));
-            calculateLinePrize(data.getRowValue());
+            calculateLinePrice(data.getRowValue());
             invoiceLinesGrid.getSelectionModel().getSelectedItem().setAmount(Integer.valueOf(data.getNewValue()));
-            if(data.getRowValue().getProductPrize() != null && data.getRowValue().getAmount() != null) {
+            if(data.getRowValue().getProductPrice() != null && data.getRowValue().getAmount() != null) {
                 invoiceLinesGrid.getSelectionModel().getSelectedItem().setCalculatedPrice(
                         invoiceLinesGrid
                                 .getSelectionModel()
                                 .getSelectedItem()
-                                .getProductPrize()
+                                .getProductPrice()
                                 .multiply(new BigDecimal(invoiceLinesGrid.getSelectionModel().getSelectedItem().getAmount()))
                 );
             }
@@ -167,12 +170,12 @@ public class InvoiceLinesControllerAux implements CrudController {
         });
         invoiceLinesGrid.getColumns().add(amountColumn);
 
-        TableColumn<InvoiceLine, String> calculatedPrizeColumn = new TableColumn<>("Precio total");
-        calculatedPrizeColumn.setCellValueFactory(
-                new PropertyValueFactory<InvoiceLine, String>("calculatedPrize")
+        TableColumn<InvoiceLine, String> calculatedPriceColumn = new TableColumn<>("Precio total");
+        calculatedPriceColumn.setCellValueFactory(
+                new PropertyValueFactory<InvoiceLine, String>("calculatedPrice")
         );
-        calculatedPrizeColumn.setMinWidth(50.0);
-        invoiceLinesGrid.getColumns().add(calculatedPrizeColumn);
+        calculatedPriceColumn.setMinWidth(50.0);
+        invoiceLinesGrid.getColumns().add(calculatedPriceColumn);
 
         invoiceLinesGrid.setEditable(true);
 
@@ -195,9 +198,9 @@ public class InvoiceLinesControllerAux implements CrudController {
         );
     }
 
-    void calculateLinePrize(InvoiceLine line) {
+    void calculateLinePrice(InvoiceLine line) {
         if(line.getAmount() != null) {
-            line.setCalculatedPrice(line.getProductPrize().multiply(new BigDecimal(line.getAmount())));
+            line.setCalculatedPrice(line.getProductPrice().multiply(new BigDecimal(line.getAmount())));
         }
     }
 
@@ -252,6 +255,15 @@ public class InvoiceLinesControllerAux implements CrudController {
         comboPaymentWay.getItems().setAll(FXCollections.observableList(List.of("EFECTIVO", "TARJETA")));
         comboPaymentWay.getSelectionModel().selectedItemProperty().addListener((options, oldValue, newValue) -> {
             receivedAmount.setDisable(!newValue.equals("EFECTIVO"));
+            receivedAmount.setOnKeyTyped(e -> {
+                BigDecimal received = new BigDecimal(receivedAmount.getText());
+                BigDecimal totalAmount = new BigDecimal(total.getText());
+                if(received.compareTo(totalAmount) > 0) {
+                    returnedValue.setText(
+                            received.subtract(totalAmount, new MathContext(2, RoundingMode.UP)).toString()
+                    );
+                }
+            });
         });
 
     }

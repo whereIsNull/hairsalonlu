@@ -40,13 +40,13 @@
                               <Insets left="5.0" />
                            </HBox.margin>
                         </Label>
-                        <TextField disable="true" prefHeight="25.0" prefWidth="59.0" />
+                        <TextField fx:id="returnedValue" editable="false" prefHeight="25.0" prefWidth="59.0" />
                         <Label text="I.V.A.:">
                            <HBox.margin>
                               <Insets left="5.0" />
                            </HBox.margin>
                         </Label>
-                        <TextField fx:id="ivaLabel" disable="true" editable="false" prefHeight="25.0" prefWidth="57.0">
+                        <TextField fx:id="ivaLabel" editable="false" prefHeight="25.0" prefWidth="57.0">
                            <HBox.margin>
                               <Insets left="5.0" />
                            </HBox.margin>

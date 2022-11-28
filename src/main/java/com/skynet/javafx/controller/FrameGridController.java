@@ -3,7 +3,9 @@ package com.skynet.javafx.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.skynet.javafx.model.Invoice;
 import com.skynet.javafx.service.ReportService;
+import com.skynet.javafx.utils.TicketPrinter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +40,8 @@ public class FrameGridController implements PrototypeController {
 	private ApplicationContext context;
 	@Autowired
 	private ReportService reportService;
+	@Autowired
+	private TicketPrinter ticketPrinter;
 	@FXML
 	private Button addButton;
 	@FXML
@@ -86,7 +90,11 @@ public class FrameGridController implements PrototypeController {
 	
 	private void printButtonHandleAction() {
 		logger.debug("clicked printButton");
-		reportService.generate(10, 2022);
+		SimpleEntity entity = frameGrid.getSelectionModel().getSelectedItem();
+		if(Invoice.class.isAssignableFrom(entity.getClass())) {
+			this.ticketPrinter.print((Invoice) entity);
+		}
+//		reportService.generate(10, 2022);
 	}
 	
 	public void initializeGrid(FrameService frameService, FrameGridDef gridDef) {
@@ -139,9 +147,9 @@ public class FrameGridController implements PrototypeController {
 		AbstractFxmlView fxmlView = (AbstractFxmlView) context.getBean(gridDef.getCreateView());
 		Stage stage = new Stage();
 		scene = new Scene(fxmlView.getView());
-		stage.setMaximized(true);
-//		stage.setMinWidth(800);
-//		stage.setMinHeight(600);
+//		stage.setMaximized(true);
+		stage.setMinWidth(800);
+		stage.setMinHeight(600);
         stage.setScene(scene);
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.initStyle(StageStyle.UTILITY);

@@ -5,6 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -71,10 +72,15 @@ public class Invoice extends SimpleEntity {
     public BigDecimal getPrice() {
         return this.lines.stream().reduce(new BigDecimal(0),
             (accumulator, line) -> {
-                accumulator.add(line.getProductPrize());
+                accumulator.add(line.getProductPrice());
                 return accumulator;
             },
             (a1, a2) -> a1.add(a2)
         );
+    }
+
+    public String getFormattedDate() {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+        return sdf.format(this.getDate());
     }
 }
