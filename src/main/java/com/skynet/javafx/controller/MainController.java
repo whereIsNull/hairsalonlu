@@ -1,7 +1,9 @@
 package com.skynet.javafx.controller;
 
+import java.util.Calendar;
 import java.util.List;
 
+import com.skynet.javafx.service.ReportService;
 import javafx.application.Platform;
 import javafx.scene.control.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +36,9 @@ public class MainController {
 	@Autowired
 	private MenuItemService menuItemService;
 
+	@Autowired
+	private ReportService reportService;
+
 	@FXML
 	private VBox mainPanel;
 
@@ -45,6 +50,9 @@ public class MainController {
 
 	@FXML
 	private MenuItem menuItemClose;
+
+	@FXML
+	private MenuItem monthReport;
 	
 	TreeView<com.skynet.javafx.model.MenuItem> treeView;
 
@@ -179,6 +187,11 @@ public class MainController {
 	private void setOnCloseMenuItemAction() {
 		this.menuItemClose.setOnAction(event -> {
 			Platform.exit();
+		});
+		this.monthReport.setOnAction(event -> {
+			int month = Calendar.getInstance().get(Calendar.MONTH);
+			int year = Calendar.getInstance().get(Calendar.YEAR);
+			this.reportService.generate(month, year);
 		});
 	}
 }

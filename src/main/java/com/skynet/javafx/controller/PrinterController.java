@@ -1,7 +1,12 @@
 package com.skynet.javafx.controller;
 
+import com.github.anastaciocintra.escpos.EscPos;
+import com.github.anastaciocintra.escpos.EscPosConst;
+import com.github.anastaciocintra.escpos.Style;
+import com.github.anastaciocintra.output.PrinterOutputStream;
 import com.skynet.javafx.jfxsupport.FXMLController;
 import com.skynet.javafx.model.Invoice;
+import com.skynet.javafx.model.InvoiceLine;
 import javafx.collections.ObservableSet;
 import javafx.fxml.FXML;
 import javafx.print.PageOrientation;
@@ -13,6 +18,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import org.springframework.beans.factory.annotation.Value;
 
 import javax.print.*;
 import javax.print.attribute.AttributeSet;
@@ -22,23 +28,35 @@ import javax.print.attribute.standard.Copies;
 import javax.print.attribute.standard.MediaSize;
 import javax.print.attribute.standard.Sides;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @FXMLController
 public class PrinterController {
 
+    @Value("${company.iva:0.16}")
+    Float iva;
+
+    @Value("${company.name:Salón belleza}")
+    String companyName;
+
     @FXML
     private BorderPane printerPane;
-    @FXML
-    private ListView<Printer> printerList;
 //    @FXML
-//    private ListView<PrintService> printerList;
+//    private ListView<Printer> printerList;
+    @FXML
+    private ListView<PrintService> printerList;
     @FXML
     private Button btnCancel;
     @FXML
@@ -50,15 +68,14 @@ public class PrinterController {
 
     @FXML
     private void initialize() {
-        ObservableSet<Printer> printers = Printer.getAllPrinters();
-        printerList.getItems().addAll(printers);
+//        ObservableSet<Printer> printers = Printer.getAllPrinters();
+//        printerList.getItems().addAll(printers);
+        PrintService[] printerServices = PrintServiceLookup.lookupPrintServices(null, null);
+        printerList.getItems().addAll(Arrays.asList(printerServices));
         // Create a Doc
         PrintRequestAttributeSet aset = new HashPrintRequestAttributeSet();
         aset.add(new Copies(1));
         aset.add(Sides.DUPLEX);
-//        PrintService[] printerServices = PrintServiceLookup.lookupPrintServices(null, null);
-//        printerList.getItems().addAll(Arrays.asList(printerServices));
-
 
         addButtonActions();
 
@@ -92,17 +109,17 @@ public class PrinterController {
         StringBuilder result = new StringBuilder(this.invoice.getDate().toString()).append("\n");
         int lineWidth = 60;
         invoice.getLines().forEach(l -> {
-            Matcher m = Pattern.compile("(.{1,20}(\\W|$))").matcher(l.getProductName());
-            StringBuilder b = new StringBuilder();
-            List<StringBuilder> lines = new ArrayList<StringBuilder>();
-            while (m.find()) {
-                lines.add(new StringBuilder(m.group()));
+                Matcher m = Pattern.compile("(.{1,20}(\\W|$))").matcher(l.getProductName());
+                StringBuilder b = new StringBuilder();
+                List<StringBuilder> lines = new ArrayList<StringBuilder>();
+                while (m.find()) {
+                    lines.add(new StringBuilder(m.group()));
 //                b.append(m.group()).append("\n");
-            }
-            String calculatedPrice = l.getCalculatedPrice().toString();
-            StringBuilder lastLine = lines.get(lines.size()-1);
-            int numberOfDots = lineWidth - calculatedPrice.length() - lastLine.toString().length();
-            System.out.println("dots: " + numberOfDots);
+                }
+                String calculatedPrice = l.getCalculatedPrice().toString();
+                StringBuilder lastLine = lines.get(lines.size()-1);
+                int numberOfDots = lineWidth - calculatedPrice.length() - lastLine.toString().length();
+                System.out.println("dots: " + numberOfDots);
             for(int i=0; i<numberOfDots; i++) {
                 lastLine.append(".");
             }
@@ -119,7 +136,7 @@ public class PrinterController {
             ((Stage)btnCancel.getScene().getWindow()).close();
         });
         this.btnAccept.setOnAction(e -> {
-            this.printTicket();
+            this.printTicketCoffee();
         });
     }
 
@@ -131,18 +148,18 @@ public class PrinterController {
     public void printTicket() {
 
 //         con javafx
-        Printer selectedPrinter = this.printerList.getSelectionModel().getSelectedItem();
-        selectedPrinter.createPageLayout(Paper.A6, PageOrientation.PORTRAIT, Printer.MarginType.DEFAULT);
-        PrinterJob job = PrinterJob.createPrinterJob(selectedPrinter);
-        try {
-            //El metodo print imprime
-            job.printPage(textAreaTicket);
-            job.endJob();
-        } catch (Exception er) {
-            er.printStackTrace();
-        } finally {
-            ((Stage)btnCancel.getScene().getWindow()).close();
-        }
+//        Printer selectedPrinter = this.printerList.getSelectionModel().getSelectedItem();
+//        selectedPrinter.createPageLayout(Paper.A6, PageOrientation.PORTRAIT, Printer.MarginType.DEFAULT);
+//        PrinterJob job = PrinterJob.createPrinterJob(selectedPrinter);
+//        try {
+//            //El metodo print imprime
+//            job.printPage(textAreaTicket);
+//            job.endJob();
+//        } catch (Exception er) {
+//            er.printStackTrace();
+//        } finally {
+//            ((Stage)btnCancel.getScene().getWindow()).close();
+//        }
 
         //con printservices
 //        PrintService printer = printerList.getSelectionModel().getSelectedItem();
@@ -234,4 +251,79 @@ public class PrinterController {
 //            er.printStackTrace();
 //        }
 //    }
+
+    private void printTicketCoffee() {
+        PrintService printer = printerList.getSelectionModel().getSelectedItem();
+        PrintService printService = PrinterOutputStream.getPrintServiceByName(printer.getName());
+        EscPos escpos;
+        try {
+            escpos = new EscPos(new PrinterOutputStream(printer));
+
+            Style title = new Style()
+                    .setFontSize(Style.FontSize._3, Style.FontSize._3)
+                    .setJustification(EscPosConst.Justification.Center);
+
+            Style subtitle = new Style(escpos.getStyle())
+                    .setBold(true)
+                    .setUnderline(Style.Underline.OneDotThick);
+            Style bold = new Style(escpos.getStyle())
+                    .setBold(true);
+
+            String dateStr = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(invoice.getDate());
+
+            escpos.writeLF(title,companyName)
+                    .feed(3)
+                    .write("Fecha: ")
+                    .writeLF(subtitle, dateStr)
+                    .feed(3);
+            invoice.getLines().forEach(invoiceLine -> addLineToTicket(invoiceLine, escpos));
+            escpos.writeLF("----------------------------------------")
+                    .feed(2);
+            escpos.writeLF("Total neto:                         " + invoice.getTotalWithoutIVA().toString());
+            escpos.writeLF("I.V.A.(" + (iva*100) + "%):         " +
+                    invoice.getTotal().multiply(new BigDecimal(iva)).setScale(2, RoundingMode.UP));
+            if(invoice.getDiscount() != null) {
+                escpos.writeLF("Descuento ("+ invoice.getDiscount().toString() +")       "
+                        + (invoice.getDiscount().multiply(invoice.getDiscount())));
+            }
+            escpos.writeLF(bold, "TOTAL                              " + invoice.getTotalWithDiscount().toString())
+                    .writeLF("----------------------------------------")
+                    .feed(8)
+                    .cut(EscPos.CutMode.FULL);
+
+            escpos.close();
+
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+    
+    private void addLineToTicket(InvoiceLine invoiceLine, EscPos escpos) {
+        int lineWidth = 60;
+        invoice.getLines().forEach(l -> {
+            Matcher m = Pattern.compile("(.{1,20}(\\W|$))").matcher(l.getProductName());
+            StringBuilder b = new StringBuilder();
+            List<StringBuilder> lines = new ArrayList<StringBuilder>();
+            while (m.find()) {
+                lines.add(new StringBuilder(m.group()));
+            }
+            String calculatedPrice = l.getCalculatedPrice().toString();
+            StringBuilder lastLine = lines.get(lines.size()-1);
+            int numberOfDots = lineWidth - calculatedPrice.length() - lastLine.toString().length();
+            System.out.println("dots: " + numberOfDots);
+            for(int i=0; i<numberOfDots; i++) {
+                lastLine.append(".");
+            }
+            lastLine.append(calculatedPrice);
+            lines.stream().forEach(lStr -> {
+                try {
+                    escpos.writeLF(lStr.toString());
+                    System.out.println(lStr.toString());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    throw new RuntimeException(e);
+                }
+            });
+        });
+    }
 }

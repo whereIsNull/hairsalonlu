@@ -30,7 +30,7 @@ public class InvoiceLinesControllerAux implements CrudController {
 
     private static final Logger logger = LoggerFactory.getLogger(InvoiceLinesControllerAux.class);
 
-    @Value("${hairSalonLu.iva:0.16}")
+    @Value("${company.iva:0.16}")
     private Float iva;
     @Autowired
     private InvoiceService invoiceService;

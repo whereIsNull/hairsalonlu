@@ -2,7 +2,7 @@ spring:
   profiles:
     active: dev
   datasource:
-    url: "jdbc:mysql://localhost/hairsalonlu?serverTimezone=UTC"
+    url: "jdbc:mysql://localhost:3306/hairsalonlu?serverTimezone=UTC"
     username: "root"
     password: "root"
   jpa:
@@ -25,5 +25,7 @@ logging:
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n"
 
-hairSalonLu:
+company:
   iva: 0.1
+  name: LuluNails
+

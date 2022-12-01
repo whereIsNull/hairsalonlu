@@ -20,6 +20,8 @@ public class Invoice extends SimpleEntity {
     @OneToMany(mappedBy = "invoice", fetch = FetchType.EAGER, cascade= CascadeType.ALL)
     private List<InvoiceLine> lines = new ArrayList<>();
     private Date date;
+    private BigDecimal discount;
+    private BigDecimal totalWithDiscount;
 
     public List<InvoiceLine> getLines() {
         return lines;
@@ -59,6 +61,22 @@ public class Invoice extends SimpleEntity {
 
     public void setTotalWithoutIVA(BigDecimal totalWithoutIVA) {
         this.totalWithoutIVA = totalWithoutIVA;
+    }
+
+    public BigDecimal getDiscount() {
+        return discount;
+    }
+
+    public void setDiscount(BigDecimal discount) {
+        this.discount = discount;
+    }
+
+    public BigDecimal getTotalWithDiscount() {
+        return totalWithDiscount;
+    }
+
+    public void setTotalWithDiscount(BigDecimal totalWithDiscount) {
+        this.totalWithDiscount = totalWithDiscount;
     }
 
     public String getFirstLine() {

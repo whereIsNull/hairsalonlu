@@ -14,33 +14,12 @@
 <?import javafx.scene.image.Image?>
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="600.0" minWidth="800.0" prefHeight="400.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.skynet.javafx.controller.InvoiceLinesController">
    <bottom>
-      <HBox alignment="CENTER_RIGHT" maxHeight="228.0" minHeight="63.0" prefHeight="122.0" prefWidth="800.0" BorderPane.alignment="CENTER">
+      <HBox alignment="CENTER_RIGHT" maxHeight="228.0" minHeight="63.0" prefHeight="167.0" prefWidth="800.0" BorderPane.alignment="CENTER">
          <children>
-            <VBox minHeight="96.0" prefHeight="117.0" prefWidth="800.0">
+            <VBox minHeight="96.0" prefHeight="113.0" prefWidth="800.0">
                <children>
-                  <HBox alignment="CENTER_RIGHT" minHeight="48.0" minWidth="800.0" prefHeight="48.0" prefWidth="800.0">
+                  <HBox alignment="CENTER_RIGHT" minHeight="35.0" minWidth="800.0" prefHeight="35.0" prefWidth="800.0">
                      <children>
-                        <ComboBox fx:id="comboPaymentWay" prefWidth="150.0">
-                           <HBox.margin>
-                              <Insets left="5.0" />
-                           </HBox.margin>
-                        </ComboBox>
-                        <Label prefHeight="25.0" prefWidth="63.0" text="Entregado:">
-                           <HBox.margin>
-                              <Insets left="10.0" />
-                           </HBox.margin>
-                        </Label>
-                        <TextField fx:id="receivedAmount" prefHeight="25.0" prefWidth="56.0">
-                           <HBox.margin>
-                              <Insets />
-                           </HBox.margin>
-                        </TextField>
-                        <Label prefHeight="25.0" prefWidth="41.0" text="Vuelta:">
-                           <HBox.margin>
-                              <Insets left="5.0" />
-                           </HBox.margin>
-                        </Label>
-                        <TextField fx:id="returnedValue" editable="false" prefHeight="25.0" prefWidth="59.0" />
                         <Label text="I.V.A.:">
                            <HBox.margin>
                               <Insets left="5.0" />
@@ -65,10 +44,61 @@
                         <TextField fx:id="total" editable="false" prefHeight="25.0" prefWidth="57.0">
                            <HBox.margin>
                               <Insets left="5.0" right="5.0" />
-                           </HBox.margin></TextField>
+                           </HBox.margin>
+                        </TextField>
                      </children>
                   </HBox>
-                  <HBox alignment="CENTER_RIGHT" minHeight="26.0" prefHeight="51.0" prefWidth="800.0">
+                  <HBox alignment="CENTER_RIGHT" minHeight="34.0" minWidth="800.0" prefHeight="35.0" prefWidth="800.0">
+                     <children>
+                        <Label text="Descuento(%):">
+                           <HBox.margin>
+                              <Insets left="5.0" />
+                           </HBox.margin>
+                        </Label>
+                        <TextField fx:id="discount" prefHeight="25.0" prefWidth="57.0">
+                           <HBox.margin>
+                              <Insets left="5.0" right="5.0" />
+                           </HBox.margin>
+                        </TextField>
+                        <Label text="Total con descuento:">
+                           <HBox.margin>
+                              <Insets left="5.0" />
+                           </HBox.margin>
+                        </Label>
+                        <TextField fx:id="totalWithdiscount" editable="false" prefHeight="25.0" prefWidth="57.0">
+                           <HBox.margin>
+                              <Insets left="5.0" right="5.0" />
+                           </HBox.margin>
+                        </TextField>
+                     </children>
+                  </HBox>
+                  <HBox alignment="CENTER_RIGHT" minHeight="35.0" minWidth="800.0" prefHeight="35.0" prefWidth="800.0">
+                     <children>
+                        <ComboBox fx:id="comboPaymentWay" prefWidth="150.0">
+                           <HBox.margin>
+                              <Insets left="5.0" />
+                           </HBox.margin>
+                        </ComboBox>
+                        <Label prefHeight="25.0" prefWidth="63.0" text="Entregado:">
+                           <HBox.margin>
+                              <Insets left="10.0" />
+                           </HBox.margin>
+                        </Label>
+                        <TextField fx:id="receivedAmount" prefHeight="25.0" prefWidth="56.0">
+                           <HBox.margin>
+                              <Insets />
+                           </HBox.margin>
+                        </TextField>
+                        <Label prefHeight="25.0" prefWidth="41.0" text="Vuelta:">
+                           <HBox.margin>
+                              <Insets left="5.0" />
+                           </HBox.margin>
+                        </Label>
+                        <TextField fx:id="returnedValue" editable="false" prefHeight="25.0" prefWidth="59.0" />
+
+                     </children>
+                  </HBox>
+                  <HBox alignment="CENTER_RIGHT" minHeight="26.0" prefHeight="35.0" prefWidth="800.0">
                      <children>
                         <Button fx:id="btnCancelInvoice" mnemonicParsing="false" text="Cancelar">
                            <HBox.margin>
@@ -98,7 +128,7 @@
             <Insets />
          </opaqueInsets>
          <children>
-            <Button fx:id="btnNewLine" mnemonicParsing="false" text="Nueva línea" >
+            <Button fx:id="btnNewLine" mnemonicParsing="false" text="Nueva línea">
                <HBox.margin>
                   <Insets left="5.0" />
                </HBox.margin>

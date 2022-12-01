@@ -33,7 +33,7 @@ public class InvoiceLinesController implements CrudController {
 
     private static final Logger logger = LoggerFactory.getLogger(InvoiceLinesController.class);
 
-    @Value("${hairSalonLu.iva:0.16}")
+    @Value("${company.iva:0.16}")
     private Float iva;
     @Autowired
     private InvoiceService invoiceService;
@@ -67,6 +67,11 @@ public class InvoiceLinesController implements CrudController {
     private TextField receivedAmount;
     @FXML
     private TextField returnedValue;
+    @FXML
+    private TextField discount;
+    @FXML
+    private TextField totalWithdiscount;
+
 
     @FXML
     private void initialize() {
@@ -200,8 +205,15 @@ public class InvoiceLinesController implements CrudController {
         );
         this.total.setText(totalPrice.toString());
         this.totalWithoutIVA.setText(
-                (totalPrice.multiply(new BigDecimal(1-iva)).setScale(2, RoundingMode.FLOOR)).toString()
+                (totalPrice.multiply(new BigDecimal(1-iva)).setScale(2, RoundingMode.DOWN)).toString()
         );
+        BigDecimal discountNumber = new BigDecimal("0");
+        if(!StringUtils.isEmpty(this.discount.getText())) {
+            discountNumber = new BigDecimal(this.discount.getText()).divide(new BigDecimal(100));
+        }
+        BigDecimal totalWithdiscountBD = new BigDecimal(1).subtract(discountNumber)
+                .multiply(totalPrice).setScale(2, RoundingMode.DOWN);
+        this.totalWithdiscount.setText(totalWithdiscountBD.toString());
         calculateReturnedValue();
     }
 
@@ -227,6 +239,15 @@ public class InvoiceLinesController implements CrudController {
         this.invoiceLinesGrid.setItems(FXCollections.observableList(invoice.getLines()));
 //        this.totalLabel.setText(invoice.getTotalWithoutIVA().toString());
         this.total.setText(invoice.getTotal().toString());
+        this.totalWithoutIVA.setText(invoice.getTotalWithoutIVA().toString());
+        this.total.setText(invoice.getTotal().toString());
+        this.totalWithdiscount.setText(
+                invoice.getTotalWithDiscount()!=null?invoice.getTotalWithDiscount().toString():""
+        );
+
+        this.ivaLabel.setText(invoice.getiVA()!=null?(invoice.getiVA()*100)+"%":iva.toString());
+        this.discount.setText(invoice.getDiscount()!=null?invoice.getDiscount().toString():"");
+
     }
 
     @Override
@@ -254,6 +275,8 @@ public class InvoiceLinesController implements CrudController {
             invoice.setTotal(new BigDecimal(total.getText()));
             invoice.setTotalWithoutIVA(new BigDecimal(totalWithoutIVA.getText()));
             invoice.setDate(new Date());
+            invoice.setDiscount((!StringUtils.isEmpty(this.discount.getText())?new BigDecimal(this.discount.getText()):new BigDecimal("0")));
+            invoice.setTotalWithDiscount(new BigDecimal(this.totalWithdiscount.getText()));
             invoiceService.save(invoice);
             ticketPrinter.print(invoice);
             btnCreateInvoice.getScene().getWindow().hide();
@@ -280,15 +303,18 @@ public class InvoiceLinesController implements CrudController {
             });
         });
 
+        discount.setOnKeyTyped(e -> {
+            calculateTotals();
+        });
     }
 
     private void calculateReturnedValue() {
         if(!StringUtils.isEmpty(receivedAmount.getText())) {
             BigDecimal received = new BigDecimal(receivedAmount.getText());
-            BigDecimal totalAmount = new BigDecimal(total.getText());
+            BigDecimal totalAmount = new BigDecimal(totalWithdiscount.getText());
             if (received.compareTo(totalAmount) > 0) {
                 returnedValue.setText(
-                        received.subtract(totalAmount, new MathContext(2, RoundingMode.UP)).toString()
+                        received.subtract(totalAmount).setScale(2, RoundingMode.UP).toString()
                 );
             }
         }
