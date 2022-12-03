@@ -5,6 +5,7 @@ import com.skynet.javafx.model.*;
 import com.skynet.javafx.service.CategoryService;
 import com.skynet.javafx.service.InvoiceService;
 import com.skynet.javafx.service.ProductService;
+import com.skynet.javafx.utils.BigDecimalUtils;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -71,7 +72,7 @@ public class InvoiceLinesControllerAux implements CrudController {
         ivaLabel.setText((iva*100)+"%");
 
         TableColumn<InvoiceLine, String> categoryColumn = new TableColumn<>("Categoría");
-        TableColumn<InvoiceLine, String> productColumn = new TableColumn<>("Producto");
+        TableColumn<InvoiceLine, String> productColumn = new TableColumn<>("Servicio");
 
         // Category
         categoryColumn.setCellValueFactory(
@@ -194,7 +195,7 @@ public class InvoiceLinesControllerAux implements CrudController {
         );
         this.total.setText(totalPrice.toString());
         this.totalWithoutIVA.setText(
-                (totalPrice.multiply(new BigDecimal(1-iva)).setScale(2, RoundingMode.FLOOR)).toString()
+                (totalPrice.divide(new BigDecimal(1+iva)).setScale(2, RoundingMode.FLOOR)).toString()
         );
     }
 
@@ -218,8 +219,8 @@ public class InvoiceLinesControllerAux implements CrudController {
     public void render(SimpleEntity entity) {
         Invoice invoice = (Invoice)entity;
         this.invoiceLinesGrid.setItems(FXCollections.observableList(invoice.getLines()));
-        this.totalLabel.setText(invoice.getTotalWithoutIVA().toString());
-        this.total.setText(invoice.getTotal().toString());
+        this.totalLabel.setText(BigDecimalUtils.toString(invoice.getTotalWithoutIVA()));
+        this.total.setText(BigDecimalUtils.toString(invoice.getTotal()));
     }
 
     @Override
@@ -240,8 +241,8 @@ public class InvoiceLinesControllerAux implements CrudController {
             invoice.setLines(new ArrayList<>(this.invoiceLinesGrid.getItems()));
             invoice.getLines().forEach(l -> l.setInvoice(invoice));
             invoice.setiVA(iva);
-            invoice.setTotal(new BigDecimal(totalLabel.getText()));
-            invoice.setTotalWithoutIVA(new BigDecimal(total.getText()));
+            invoice.setTotal(BigDecimalUtils.toBigDecimal(totalLabel.getText()));
+            invoice.setTotalWithoutIVA(BigDecimalUtils.toBigDecimal(total.getText()));
             invoice.setDate(new Date());
             invoiceService.save(invoice);
             btnCreateInvoice.getScene().getWindow().hide();
@@ -256,8 +257,8 @@ public class InvoiceLinesControllerAux implements CrudController {
         comboPaymentWay.getSelectionModel().selectedItemProperty().addListener((options, oldValue, newValue) -> {
             receivedAmount.setDisable(!newValue.equals("EFECTIVO"));
             receivedAmount.setOnKeyTyped(e -> {
-                BigDecimal received = new BigDecimal(receivedAmount.getText());
-                BigDecimal totalAmount = new BigDecimal(total.getText());
+                BigDecimal received = BigDecimalUtils.toBigDecimal(receivedAmount.getText());
+                BigDecimal totalAmount = BigDecimalUtils.toBigDecimal(total.getText());
                 if(received.compareTo(totalAmount) > 0) {
                     returnedValue.setText(
                             received.subtract(totalAmount, new MathContext(2, RoundingMode.UP)).toString()

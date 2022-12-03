@@ -17,7 +17,7 @@
                     <content>
                         <AnchorPane prefHeight="334.0" prefWidth="600.0">
                             <children>
-                                <Label layoutX="25.0" layoutY="26.0" text="Producto:" />
+                                <Label layoutX="25.0" layoutY="26.0" text="Servicio:" />
                                 <TextField fx:id="textProductName" layoutX="92.0" layoutY="21.0" prefHeight="26.0" prefWidth="478.0" />
                                 <Label layoutX="25.0" layoutY="77.0" text="Precio:" />
                                 <TextField fx:id="textPrice" layoutX="92.0" layoutY="72.0" prefHeight="26.0" prefWidth="478.0"/>

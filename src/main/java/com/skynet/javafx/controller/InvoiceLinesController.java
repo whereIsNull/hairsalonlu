@@ -5,6 +5,7 @@ import com.skynet.javafx.model.*;
 import com.skynet.javafx.service.CategoryService;
 import com.skynet.javafx.service.InvoiceService;
 import com.skynet.javafx.service.ProductService;
+import com.skynet.javafx.utils.BigDecimalUtils;
 import com.skynet.javafx.utils.TicketPrinter;
 import javafx.collections.FXCollections;
 import javafx.event.EventType;
@@ -81,7 +82,7 @@ public class InvoiceLinesController implements CrudController {
         ivaLabel.setText((iva*100)+"%");
 
         TableColumn<InvoiceLine, String> categoryColumn = new TableColumn<>("Categoría");
-        TableColumn<InvoiceLine, String> productColumn = new TableColumn<>("Producto");
+        TableColumn<InvoiceLine, String> productColumn = new TableColumn<>("Servicio");
 
         // Category
         categoryColumn.setCellValueFactory(
@@ -205,11 +206,11 @@ public class InvoiceLinesController implements CrudController {
         );
         this.total.setText(totalPrice.toString());
         this.totalWithoutIVA.setText(
-                (totalPrice.multiply(new BigDecimal(1-iva)).setScale(2, RoundingMode.DOWN)).toString()
+                (totalPrice.divide(new BigDecimal(1+iva), RoundingMode.HALF_UP).setScale(2, RoundingMode.DOWN)).toString()
         );
         BigDecimal discountNumber = new BigDecimal("0");
         if(!StringUtils.isEmpty(this.discount.getText())) {
-            discountNumber = new BigDecimal(this.discount.getText()).divide(new BigDecimal(100));
+            discountNumber = BigDecimalUtils.toBigDecimal(this.discount.getText()).divide(new BigDecimal(100));
         }
         BigDecimal totalWithdiscountBD = new BigDecimal(1).subtract(discountNumber)
                 .multiply(totalPrice).setScale(2, RoundingMode.DOWN);
@@ -238,15 +239,15 @@ public class InvoiceLinesController implements CrudController {
         Invoice invoice = (Invoice)entity;
         this.invoiceLinesGrid.setItems(FXCollections.observableList(invoice.getLines()));
 //        this.totalLabel.setText(invoice.getTotalWithoutIVA().toString());
-        this.total.setText(invoice.getTotal().toString());
-        this.totalWithoutIVA.setText(invoice.getTotalWithoutIVA().toString());
-        this.total.setText(invoice.getTotal().toString());
-        this.totalWithdiscount.setText(
-                invoice.getTotalWithDiscount()!=null?invoice.getTotalWithDiscount().toString():""
-        );
+        this.total.setText(BigDecimalUtils.toString(invoice.getTotal()));
+        this.totalWithoutIVA.setText(BigDecimalUtils.toString(invoice.getTotalWithoutIVA()));
+        this.total.setText(BigDecimalUtils.toString(invoice.getTotal()));
+        this.totalWithdiscount.setText(BigDecimalUtils.toString(invoice.getTotalWithDiscount()));
 
         this.ivaLabel.setText(invoice.getiVA()!=null?(invoice.getiVA()*100)+"%":iva.toString());
-        this.discount.setText(invoice.getDiscount()!=null?invoice.getDiscount().toString():"");
+        this.discount.setText(BigDecimalUtils.toString(invoice.getDiscount()));
+
+        this.btnCreateInvoice.setDisable(true);
 
     }
 
@@ -272,11 +273,11 @@ public class InvoiceLinesController implements CrudController {
             invoice.setLines(new ArrayList<>(this.invoiceLinesGrid.getItems()));
             invoice.getLines().forEach(l -> l.setInvoice(invoice));
             invoice.setiVA(iva);
-            invoice.setTotal(new BigDecimal(total.getText()));
-            invoice.setTotalWithoutIVA(new BigDecimal(totalWithoutIVA.getText()));
+            invoice.setTotal(BigDecimalUtils.toBigDecimal(total.getText()));
+            invoice.setTotalWithoutIVA(BigDecimalUtils.toBigDecimal(totalWithoutIVA.getText()));
             invoice.setDate(new Date());
-            invoice.setDiscount((!StringUtils.isEmpty(this.discount.getText())?new BigDecimal(this.discount.getText()):new BigDecimal("0")));
-            invoice.setTotalWithDiscount(new BigDecimal(this.totalWithdiscount.getText()));
+            invoice.setDiscount((!StringUtils.isEmpty(this.discount.getText())?BigDecimalUtils.toBigDecimal(this.discount.getText()):new BigDecimal("0")));
+            invoice.setTotalWithDiscount(BigDecimalUtils.toBigDecimal(this.totalWithdiscount.getText()));
             invoiceService.save(invoice);
             ticketPrinter.print(invoice);
             btnCreateInvoice.getScene().getWindow().hide();
@@ -310,8 +311,8 @@ public class InvoiceLinesController implements CrudController {
 
     private void calculateReturnedValue() {
         if(!StringUtils.isEmpty(receivedAmount.getText())) {
-            BigDecimal received = new BigDecimal(receivedAmount.getText());
-            BigDecimal totalAmount = new BigDecimal(totalWithdiscount.getText());
+            BigDecimal received = BigDecimalUtils.toBigDecimal(receivedAmount.getText());
+            BigDecimal totalAmount = BigDecimalUtils.toBigDecimal(totalWithdiscount.getText());
             if (received.compareTo(totalAmount) > 0) {
                 returnedValue.setText(
                         received.subtract(totalAmount).setScale(2, RoundingMode.UP).toString()

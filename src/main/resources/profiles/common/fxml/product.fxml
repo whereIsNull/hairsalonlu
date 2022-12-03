@@ -20,7 +20,7 @@
                             <children>
                                 <Label layoutX="25.0" layoutY="25.0" text="Categoría:" />
                                 <ComboBox fx:id="comboCategory" layoutX="105.0" layoutY="24.0" prefHeight="26.0" prefWidth="178.0" />
-                                <Label layoutX="25.0" layoutY="75.0" text="Producto:" />
+                                <Label layoutX="25.0" layoutY="75.0" text="Servicio:" />
                                 <TextField fx:id="textProductName" layoutX="105.0" layoutY="74.0" prefHeight="26.0" prefWidth="478.0" />
                                 <Label layoutX="25.0" layoutY="125.0" text="Precio:" />
                                 <TextField fx:id="textPrice" layoutX="105.0" layoutY="124.0" prefHeight="26.0" prefWidth="478.0"/>

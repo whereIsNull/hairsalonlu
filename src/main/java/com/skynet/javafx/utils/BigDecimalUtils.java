@@ -1,5 +1,7 @@
 package com.skynet.javafx.utils;
 
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import org.apache.commons.beanutils.converters.BigDecimalConverter;
 import org.apache.commons.lang3.StringUtils;
 
@@ -12,29 +14,31 @@ import java.util.Locale;
 
 public class BigDecimalUtils {
 
-    public static BigDecimal toBigDecimal(String value) throws ParseException {
+    public static BigDecimal toBigDecimal(String value) {
         if(StringUtils.isEmpty(value)) {
             return new BigDecimal(0);
         }
         try {
-            DecimalFormat df = (DecimalFormat) NumberFormat.getInstance(Locale.getDefault());
-            df.setParseBigDecimal(true);
-            BigDecimal bd = (BigDecimal) df.parseObject(value);
+            String valueStr = value.replaceAll(",", "\\.");
+            BigDecimal bd = (BigDecimal) new BigDecimal(valueStr);
             System.out.println(bd.toString());
             return bd;
-        } catch (ParseException e) {
-            e.printStackTrace();
+        } catch (NumberFormatException e) {
 //            showErrorWindow("Formato incorrecto");
-            throw e;
+            Alert alert = new Alert(Alert.AlertType.ERROR,
+                    "Formato de número incorrecto: " + value, ButtonType.OK);
+            alert.showAndWait();
+            if (alert.getResult() == ButtonType.YES) {
+                //do stuff
+            }
+            throw new RuntimeException(e);
         }
     }
 
-    public static String toString(BigDecimal value) throws ParseException {
+    public static String toString(BigDecimal value) {
         if(value == null) {
             return "";
         }
-        DecimalFormat df = (DecimalFormat) NumberFormat.getInstance(Locale.getDefault());
-        df.setParseBigDecimal(true);
-        return df.format(value.setScale(2, RoundingMode.DOWN));
+        return value.toString().replaceAll("\\.", ",");
     }
 }

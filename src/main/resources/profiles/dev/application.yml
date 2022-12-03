@@ -9,12 +9,18 @@ spring:
     hibernate.ddl-auto: "update"
 
 javafx:
-  title: Sprint Boot Javafx
+  title: Lulu Nails TPV
   stage:
     resizable: true
   main:
     tree: true
     toolbar: true
+  appicons:
+    - /images/luluNails_64x64.png
+    - /images/luluNails_46x46.png
+    - /images/luluNails_36x36.png
+    - /images/luluNails_24x24.png
+    - /images/luluNails_16x16.png
 
 flyway:
   enabled: true

@@ -6,6 +6,7 @@ import com.skynet.javafx.model.Product;
 import com.skynet.javafx.model.SimpleEntity;
 import com.skynet.javafx.service.CategoryService;
 import com.skynet.javafx.service.ProductService;
+import com.skynet.javafx.utils.BigDecimalUtils;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -80,7 +81,7 @@ public class ProductController implements CrudController {
         product = (Product) entity;
         comboCategory.getSelectionModel().select(product.getCategory());
         textProductName.setText(product.getProductName());
-        textPrice.setText(product.getPrice() != null? product.getPrice().toString(): "");
+        textPrice.setText(BigDecimalUtils.toString(product.getPrice()));
     }
 
     @Override
@@ -99,13 +100,18 @@ public class ProductController implements CrudController {
         }
         product.setCategory(categoryStr);
         product.setProductName(textProductName.getText());
-        product.setPrice(new BigDecimal(textPrice.getText()));
+        product.setPrice(BigDecimalUtils.toBigDecimal(textPrice.getText()));
         productService.save(product);
     }
 
     private BigDecimal calculatePriceWithoutIva() {
-        BigDecimal price = new BigDecimal(textPrice.getText());
-        BigDecimal ivaBD = new BigDecimal(iva);
-        return price.divide(ivaBD.add(new BigDecimal(1)), 2, RoundingMode.HALF_DOWN);
+        try {
+            BigDecimal price = BigDecimalUtils.toBigDecimal(textPrice.getText());
+            BigDecimal ivaBD = new BigDecimal(iva);
+            return price.divide(ivaBD.add(new BigDecimal(1)), 2, RoundingMode.HALF_DOWN);
+        } catch(RuntimeException e) {
+            textPrice.setText("");
+            return null;
+        }
     }
 }

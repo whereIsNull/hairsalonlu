@@ -10,11 +10,11 @@ import java.util.List;
 public class ProductGridDef implements FrameGridDef {
 
     public static String COLUMN_NAMES[] =
-            { "Categoría", "Producto","Precio"};
+            { "Categoría", "Servicio","Precio"};
     public static String COLUMN_DATA_NAMES[] =
             { "category", "productName","price"};
     public static Integer COLUMN_SIZES[] = { 200, 200, 50 };
-    public static String TITLE_POPUPS = "Productos";
+    public static String TITLE_POPUPS = "Servicios";
 
     @Override
     public List<String> getColumnNames() {
