@@ -4,6 +4,7 @@ import java.util.Calendar;
 import java.util.List;
 
 import com.skynet.javafx.service.ReportService;
+import com.skynet.javafx.views.PDFGeneratorView;
 import javafx.application.Platform;
 import javafx.scene.control.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +54,9 @@ public class MainController {
 
 	@FXML
 	private MenuItem monthReport;
+
+	@Autowired
+	private PDFGeneratorView pdfGeneratorView;
 	
 	TreeView<com.skynet.javafx.model.MenuItem> treeView;
 
@@ -135,18 +139,26 @@ public class MainController {
 			return;
 		}
 
-		FrameGridView gridView = (FrameGridView) context.getBean(FrameGridView.class);
-		FrameGridController controller = (FrameGridController) context.getBean(FrameGridController.class);
-		gridView.setController(controller);
+		if(menuItem.getKey().equals("master.reports")) {
+			Tab tab = new Tab(menuItem.getValue() + ADDITIONAL_TAB_TITLE);
+			tab.setContent(this.pdfGeneratorView.getView());
+			tabPane.getTabs().add(tab);
+			tabPane.getSelectionModel().select(tabPane.getTabs().size() - 1);
+		} else {
 
-		Tab tab = new Tab(menuItem.getValue() + ADDITIONAL_TAB_TITLE);
-		tab.setContent(gridView.getView());
-		tabPane.getTabs().add(tab);
-		tabPane.getSelectionModel().select(tabPane.getTabs().size() - 1);
+			FrameGridView gridView = (FrameGridView) context.getBean(FrameGridView.class);
+			FrameGridController controller = (FrameGridController) context.getBean(FrameGridController.class);
+			gridView.setController(controller);
 
-		FrameService frameService = (FrameService) context.getBean(menuItem.getService());
-		FrameGridDef frameGridDef = (FrameGridDef) context.getBean(menuItem.getGridDef());
-		controller.initializeGrid(frameService, frameGridDef);
+			Tab tab = new Tab(menuItem.getValue() + ADDITIONAL_TAB_TITLE);
+			tab.setContent(gridView.getView());
+			tabPane.getTabs().add(tab);
+			tabPane.getSelectionModel().select(tabPane.getTabs().size() - 1);
+
+			FrameService frameService = (FrameService) context.getBean(menuItem.getService());
+			FrameGridDef frameGridDef = (FrameGridDef) context.getBean(menuItem.getGridDef());
+			controller.initializeGrid(frameService, frameGridDef);
+		}
 	}
 
 	private ToolBar buildToolBar() {

@@ -32,6 +32,12 @@ public class InvoiceService implements FrameService {
         return result;
     }
 
+    public List<? extends SimpleEntity> getData(int month, int year) {
+        List<Invoice> result = new ArrayList<>();
+        invoiceRepository.findByMonthAndYear(month+1, year).forEach(invoice -> result.add(invoice));
+        return result;
+    }
+
     public void save(Invoice invoice) {
         Invoice createdInvoice = invoiceRepository.save(invoice);
         registerAudit(createdInvoice, Action.INSERT);

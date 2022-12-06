@@ -8,6 +8,8 @@ import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.text.DateFormatSymbols;
@@ -22,7 +24,7 @@ public class ReportService {
     private InvoiceService invoiceService;
 
     public void generate(int month, int year) {
-        List<Invoice> invoices = (List<Invoice>)invoiceService.getData();
+        List<Invoice> invoices = (List<Invoice>)invoiceService.getData(month, year);
         List<Map> invoicesList = invoices.stream().map(invoice -> {
             Map<String, Object> element = new HashMap<>();
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
@@ -48,8 +50,8 @@ public class ReportService {
             JRPdfExporter exporter = new JRPdfExporter();
 
             exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
-            exporter.setExporterOutput(
-                    new SimpleOutputStreamExporterOutput("invoice.pdf"));
+            File  report = File.createTempFile("informe_facturacion_" + (monthStr) + "_" + year, ".pdf");
+            exporter.setExporterOutput( new SimpleOutputStreamExporterOutput(report));
 
 //            SimplePdfReportConfiguration reportConfig
 //                    = new SimplePdfReportConfiguration();
@@ -64,7 +66,7 @@ public class ReportService {
 //            exporter.setConfiguration(exportConfig);
 
             exporter.exportReport();
-        } catch (JRException e) {
+        } catch (JRException | IOException e) {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
