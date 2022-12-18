@@ -8,17 +8,23 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
-import org.apache.commons.lang3.Range;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.io.File;
 import java.net.URL;
+import java.nio.file.Files;
 import java.text.DateFormatSymbols;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.List;
 
 @FXMLController
 public class PDFGeneratorController {
+
+    private static Logger LOGGER = LoggerFactory.getLogger(PDFGeneratorController.class);
+    private static final String PDF_HEADER = "data:application/pdf;base64,";
 
     @Autowired
     private ReportService reportService;
@@ -64,11 +70,23 @@ public class PDFGeneratorController {
                 Integer monthNumber = cal.get(Calendar.MONTH);
                 Integer yearNumber = comboYear.getSelectionModel().getSelectedItem();
 
-                reportService.generate(monthNumber, yearNumber);
-            } catch (ParseException e) {
+                reportService.generateHtml(monthNumber, yearNumber);
+
+                File report = reportService.generateHtml(monthNumber, yearNumber);
+
+                String htmlContent = Files.readString(report.toPath());
+                System.out.println(htmlContent);
+                URL urlFile = report.toURL();
+                webEngine.load(urlFile.toString());
+
+                File pdfReport = reportService.generatePDF(monthNumber, yearNumber);
+
+            } catch (Exception e) {
                 e.printStackTrace();
+                throw new RuntimeException(e);
             }
 
         });
     }
+
 }

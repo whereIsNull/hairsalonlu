@@ -200,10 +200,10 @@ public class MainController {
 		this.menuItemClose.setOnAction(event -> {
 			Platform.exit();
 		});
-		this.monthReport.setOnAction(event -> {
-			int month = Calendar.getInstance().get(Calendar.MONTH);
-			int year = Calendar.getInstance().get(Calendar.YEAR);
-			this.reportService.generate(month, year);
-		});
+//		this.monthReport.setOnAction(event -> {
+//			int month = Calendar.getInstance().get(Calendar.MONTH);
+//			int year = Calendar.getInstance().get(Calendar.YEAR);
+//			this.reportService.generate(month, year);
+//		});
 	}
 }

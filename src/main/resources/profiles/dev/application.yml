@@ -34,4 +34,7 @@ logging:
 company:
   iva: 0.1
   name: LuluNails
-
+  address: Av. Marqués de Figueroa 55 bajo derecha, B
+  zip: 15500, Fene
+  phone: 722 758 395
+  email: Luluivnails@gmail.com

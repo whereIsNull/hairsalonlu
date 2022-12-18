@@ -66,18 +66,13 @@
 	<parameter name="invoicesList" class="java.util.List"/>
 	<parameter name="month" class="java.lang.String"/>
 	<parameter name="year" class="java.lang.Integer"/>
-	<parameter name="companyName" class="java.lang.String"/>
-	<parameter name="address" class="java.lang.String"/>
-	<parameter name="zip" class="java.lang.String"/>
-	<parameter name="phone" class="java.lang.String"/>
-	<parameter name="email" class="java.lang.String"/>
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
 	<title>
-		<band height="134" splitType="Stretch">
+		<band height="115" splitType="Stretch">
 			<line>
-				<reportElement x="0" y="89" width="555" height="1" uuid="806ce5df-1219-4876-ae0c-ca7405b1f246">
+				<reportElement x="-1" y="70" width="556" height="1" uuid="806ce5df-1219-4876-ae0c-ca7405b1f246">
 					<property name="local_mesure_unitheight" value="pixel"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
@@ -86,7 +81,7 @@
 				<reportElement x="415" y="10" width="50" height="20" uuid="0f86baff-6386-4f3f-b3fe-2388707babe8"/>
 				<box rightPadding="4"/>
 				<textElement textAlignment="Right"/>
-				<text><![CDATA[Fecha:]]></text>
+				<text><![CDATA[Date:]]></text>
 			</staticText>
 			<textField pattern="EEEEE dd MMMMM yyyy">
 				<reportElement x="465" y="10" width="84" height="20" uuid="bb10dbe1-0a4f-4722-9953-c163b63cf979"/>
@@ -108,35 +103,29 @@
 			</staticText>
 			<staticText>
 				<reportElement x="95" y="55" width="205" height="15" uuid="b8cc42fd-b569-497d-834d-7e854040ad18"/>
-				<text><![CDATA[$P{phone}]]></text>
+				<text><![CDATA[Phone number, web address, ecc.]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="95" y="25" width="205" height="15" uuid="c226e44d-3bb5-4145-b0b3-903bf1d79fde"/>
-				<text><![CDATA[$P{address}]]></text>
+				<text><![CDATA[Street address]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="95" y="40" width="205" height="15" uuid="b96f7183-44f8-43ad-ba60-43d8fbf50b6e"/>
-				<text><![CDATA[${zip}]]></text>
+				<text><![CDATA[City, street, ZIP code]]></text>
 			</staticText>
 			<textField>
 				<reportElement x="95" y="0" width="285" height="25" uuid="edfc14c4-e369-449e-a785-887f602154ae"/>
 				<textElement>
 					<font size="19" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$P{companyName}]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Text Field"]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="0" y="100" width="280" height="25" uuid="6c09c853-512b-417f-a9a1-9f034513bf38"/>
+				<reportElement x="0" y="90" width="280" height="25" uuid="6c09c853-512b-417f-a9a1-9f034513bf38"/>
 				<textElement>
 					<font size="16" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{month} +" - " + $P{year}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="95" y="70" width="205" height="15" uuid="54b75c69-8c53-471e-9f58-7ff959067154">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<textFieldExpression><![CDATA[$P{email}]]></textFieldExpression>
 			</textField>
 		</band>
 	</title>
@@ -153,7 +142,7 @@
 					</datasetRun>
 					<jr:listContents height="30" width="491">
 						<textField textAdjust="StretchHeight">
-							<reportElement x="0" y="0" width="400" height="30" uuid="2500a411-7ad6-4148-958f-34dfae2c9346">
+							<reportElement x="0" y="0" width="400" height="15" uuid="2500a411-7ad6-4148-958f-34dfae2c9346">
 								<property name="com.jaspersoft.studio.unit.height" value="px"/>
 							</reportElement>
 							<textElement verticalAlignment="Middle"/>
@@ -170,15 +159,6 @@
 		</band>
 	</detail>
 	<lastPageFooter>
-		<band height="64">
-			<line>
-				<reportElement x="-20" y="30" width="595" height="1" uuid="105f4b7c-8e5f-485e-b0a3-2e610ea50af7"/>
-			</line>
-			<textField>
-				<reportElement x="230" y="40" width="100" height="24" uuid="e7023efa-42c6-4fc6-a1d1-f3991f87a5a6"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[LuluNails - new java.util.Date()]]></textFieldExpression>
-			</textField>
-		</band>
+		<band height="39"/>
 	</lastPageFooter>
 </jasperReport>

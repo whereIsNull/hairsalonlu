@@ -2,14 +2,16 @@ package com.skynet.javafx.service;
 
 import com.skynet.javafx.model.Invoice;
 import net.sf.jasperreports.engine.*;
+import net.sf.jasperreports.engine.export.HtmlExporter;
+import net.sf.jasperreports.engine.export.JRExporterContext;
+import net.sf.jasperreports.engine.export.JRHtmlExporterContext;
 import net.sf.jasperreports.engine.export.JRPdfExporter;
-import net.sf.jasperreports.export.SimpleExporterInput;
-import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
+import net.sf.jasperreports.export.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.text.DateFormatSymbols;
@@ -23,7 +25,26 @@ public class ReportService {
     @Autowired
     private InvoiceService invoiceService;
 
-    public void generate(int month, int year) {
+    @Value("company.name")
+    private String companyName;
+    @Value("company.address")
+    private String address;
+    @Value("company.phone")
+    private String phone;
+    @Value("company.zip")
+    private String zip;
+    @Value("company.email")
+    private String email;
+
+    public File generateHtml(int month, int year) {
+        return this.generate(month, year, new HtmlExporter());
+    }
+
+    public File generatePDF(int month, int year) {
+        return this.generate(month, year, new JRPdfExporter());
+    }
+
+    private File generate(Integer month, Integer year, JRAbstractExporter exporter) {
         List<Invoice> invoices = (List<Invoice>)invoiceService.getData(month, year);
         List<Map> invoicesList = invoices.stream().map(invoice -> {
             Map<String, Object> element = new HashMap<>();
@@ -37,7 +58,8 @@ public class ReportService {
             element.put("price", totalPrice.setScale(2).toString());
             return element;
         }).collect(Collectors.toList());
-        InputStream employeeReportStream = getClass().getResourceAsStream("/jasper/Invoice.jrxml");
+        InputStream employeeReportStream = getClass().getResourceAsStream("/jasper/Invoice_logo.jrxml");
+        File report = null;
         try {
             JasperReport jasperReport = JasperCompileManager.compileReport(employeeReportStream);
             DateFormatSymbols symbols = new DateFormatSymbols(Locale.getDefault());
@@ -47,28 +69,23 @@ public class ReportService {
             params.put("year", year);
             params.put("invoicesList", invoicesList);
             JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, params, new JREmptyDataSource());
-            JRPdfExporter exporter = new JRPdfExporter();
 
+            exporter = new HtmlExporter();
             exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
-            File  report = File.createTempFile("informe_facturacion_" + (monthStr) + "_" + year, ".pdf");
-            exporter.setExporterOutput( new SimpleOutputStreamExporterOutput(report));
-
-//            SimplePdfReportConfiguration reportConfig
-//                    = new SimplePdfReportConfiguration();
-//            reportConfig.setSizePageToContent(true);
-//            reportConfig.setForceLineBreakPolicy(false);
-//
-//            SimplePdfExporterConfiguration exportConfig
-//                    = new SimplePdfExporterConfiguration();
-//            exportConfig.setAllowedPermissionsHint("PRINTING");
-//
-//            exporter.setConfiguration(reportConfig);
-//            exporter.setConfiguration(exportConfig);
+//            File report = File.createTempFile("informe_facturacion_" + (monthStr) + "_" + year, ".html");
+            report = new File("informe_facturacion_" + (monthStr) + "_" + year + ".html");
+            exporter.setExporterOutput( new SimpleHtmlExporterOutput(report));
 
             exporter.exportReport();
-        } catch (JRException | IOException e) {
+            return report;
+        } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException(e);
+        } finally {
+            if(report != null) {
+//                report.delete();
+            }
         }
     }
+
 }
