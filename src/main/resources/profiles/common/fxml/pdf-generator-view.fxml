@@ -32,12 +32,12 @@
    <bottom>
       <HBox alignment="CENTER_RIGHT" maxHeight="40.0" minHeight="40.0" prefHeight="40.0" prefWidth="595.0" BorderPane.alignment="CENTER_RIGHT">
          <children>
-            <Button mnemonicParsing="false" text="Descargar">
+            <Button fx:id="downloadReport" mnemonicParsing="false" text="Descargar" disable="true">
                <HBox.margin>
                   <Insets right="5.0" />
                </HBox.margin>
             </Button>
-            <Button mnemonicParsing="false" text="Enviar a gestoría">
+            <Button fx:id="sendReport" mnemonicParsing="false" text="Enviar a gestoría" disable="true">
                <HBox.margin>
                   <Insets />
                </HBox.margin>

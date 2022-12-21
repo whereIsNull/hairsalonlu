@@ -8,6 +8,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
+import javafx.stage.DirectoryChooser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +40,15 @@ public class PDFGeneratorController {
     private Button buttonGenerate;
 
     @FXML
+    private Button downloadReport;
+
+    @FXML
+    private Button sendReport;
+
+    @FXML
     private WebView pdfViewer;
+
+    private Integer monthNumber, yearNumber;
 
     @FXML
     private void initialize() {
@@ -67,24 +76,41 @@ public class PDFGeneratorController {
                         .parse(this.comboMonth.getSelectionModel().getSelectedItem());
                 Calendar cal = Calendar.getInstance();
                 cal.setTime(date);
-                Integer monthNumber = cal.get(Calendar.MONTH);
-                Integer yearNumber = comboYear.getSelectionModel().getSelectedItem();
-
-                reportService.generateHtml(monthNumber, yearNumber);
-
+                monthNumber = cal.get(Calendar.MONTH);
+                yearNumber = comboYear.getSelectionModel().getSelectedItem();
                 File report = reportService.generateHtml(monthNumber, yearNumber);
 
                 String htmlContent = Files.readString(report.toPath());
                 System.out.println(htmlContent);
                 URL urlFile = report.toURL();
                 webEngine.load(urlFile.toString());
-
-                File pdfReport = reportService.generatePDF(monthNumber, yearNumber);
-
+                downloadReport.setDisable(false);
+                sendReport.setDisable(false);
+//                if(report != null) {
+//                    report.delete();
+//                }
             } catch (Exception e) {
                 e.printStackTrace();
                 throw new RuntimeException(e);
             }
+        });
+
+        addDownloadAction();
+    }
+
+    private void addDownloadAction() {
+        downloadReport.setOnAction(event -> {
+            final DirectoryChooser directoryChooser = new DirectoryChooser();
+            final File selectedDirectory = directoryChooser.showDialog(downloadReport.getScene().getWindow());
+            if (selectedDirectory != null) {
+                selectedDirectory.getAbsolutePath();
+            }
+            reportService.generatePDF(selectedDirectory.getAbsolutePath(), monthNumber, yearNumber);
+        });
+    }
+
+    private void addSendAction() {
+        sendReport.setOnAction(event -> {
 
         });
     }

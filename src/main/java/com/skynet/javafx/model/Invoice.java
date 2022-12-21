@@ -14,9 +14,9 @@ import java.util.stream.Collectors;
 @Entity
 public class Invoice extends SimpleEntity {
 
-    public Float iVA;
-    public BigDecimal total;
-    public BigDecimal totalWithoutIVA;
+    private Float iVA;
+    private BigDecimal total;
+    private BigDecimal totalWithoutIVA;
     @OneToMany(mappedBy = "invoice", fetch = FetchType.EAGER, cascade= CascadeType.ALL)
     private List<InvoiceLine> lines = new ArrayList<>();
     private Date date;
